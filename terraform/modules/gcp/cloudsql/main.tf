@@ -1,20 +1,12 @@
-# -----------------------------
-# Default VPC fallback
-# -----------------------------
+# Default VPC (used only if network_id not passed)
 data "google_compute_network" "default_vpc" {
   name = "default"
 }
 
-# -----------------------------
-# Local values
-# -----------------------------
 locals {
   instance_name = "${var.name_prefix}-pgsql-${var.suffix}"
 }
 
-# -----------------------------
-# CloudSQL PostgreSQL Instance
-# -----------------------------
 resource "google_sql_database_instance" "postgres" {
   name             = local.instance_name
   database_version = "POSTGRES_14"
@@ -36,18 +28,12 @@ resource "google_sql_database_instance" "postgres" {
   deletion_protection = var.deletion_protection
 }
 
-# -----------------------------
-# Optional: Default Database
-# -----------------------------
 resource "google_sql_database" "default_db" {
   count    = var.create_default_db ? 1 : 0
   name     = var.default_db_name
   instance = google_sql_database_instance.postgres.name
 }
 
-# -----------------------------
-# Optional: Default User
-# -----------------------------
 resource "google_sql_user" "default_user" {
   count    = var.create_default_user ? 1 : 0
   name     = var.default_user_name
