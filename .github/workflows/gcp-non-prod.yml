@@ -85,7 +85,8 @@ jobs:
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
             -var="create_dns_internal=${{ inputs.dns_internal }}" \
-            -var="create_dashboards=${{ inputs.dashboards }}"
+            -var="create_dashboards=${{ inputs.dashboards }}" \
+            -var="cloudsql_default_user_password=${{ secrets.CLOUDSQL_DEFAULT_USER_PASSWORD }}"
 
       # 6️⃣ Terraform Apply
       - name: Terraform Apply
@@ -104,7 +105,8 @@ jobs:
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
             -var="create_dns_internal=${{ inputs.dns_internal }}" \
-            -var="create_dashboards=${{ inputs.dashboards }}"
+            -var="create_dashboards=${{ inputs.dashboards }}" \
+            -var="cloudsql_default_user_password=${{ secrets.CLOUDSQL_DEFAULT_USER_PASSWORD }}"
 
       # 7️⃣ Show Terraform Outputs
       - name: Show Terraform Outputs
