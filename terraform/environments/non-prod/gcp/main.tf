@@ -83,17 +83,17 @@ module "cloudsql" {
   count       = var.create_cloudsql ? 1 : 0
   source      = "../../../modules/gcp/cloudsql"
 
-  name_prefix = local.name_prefix
-  suffix      = local.unique_suffix
-  region      = var.region
+  name_prefix            = local.name_prefix
+  suffix                 = local.unique_suffix
+  region                 = var.region
+  network_id             = data.google_compute_network.default_vpc.id
+  default_user_password  = var.cloudsql_default_user_password
+  create_default_db      = true
+  default_db_name        = "appdb"
+  create_default_user    = true
+  default_user_name      = "appuser"
 
-  # REQUIRED inputs
-  network_id            = data.google_compute_network.default_vpc.id
-  default_user_password = var.cloudsql_default_user_password
-
-  depends_on = [
-    google_service_networking_connection.private_vpc_connection
-  ]
+  depends_on = [google_service_networking_connection.private_vpc_connection]
 }
 
 
@@ -104,15 +104,17 @@ module "compute_vm" {
   count       = var.create_compute_vm ? 1 : 0
   source      = "../../../modules/gcp/compute-vm"
 
-  subnet_id   = data.google_compute_subnetwork.default_subnet.id
-  name_prefix = local.name_prefix
-  suffix      = local.unique_suffix
-  zone        = var.zone
-  tags        = ["vm"]
-
-  cloudsql_private_ip = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
-  cloudsql_user       = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
-  cloudsql_db_name    = var.create_cloudsql ? module.cloudsql[0].default_db_name : ""
+  name_prefix          = local.name_prefix
+  suffix               = local.unique_suffix
+  subnet_id            = data.google_compute_subnetwork.default_subnet.id
+  zone                 = var.zone
+  create_vm            = true
+  machine_type         = "e2-micro"
+  image                = "debian-cloud/debian-11"
+  tags                 = ["vm"]
+  cloudsql_private_ip  = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
+  cloudsql_user        = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
+  cloudsql_db_name     = var.create_cloudsql ? module.cloudsql[0].default_db_name : ""
 }
 
 # -----------------------------
