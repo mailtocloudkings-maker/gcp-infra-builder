@@ -1,8 +1,3 @@
-# Default VPC (used only if network_id not passed)
-data "google_compute_network" "default_vpc" {
-  name = "default"
-}
-
 locals {
   instance_name = "${var.name_prefix}-pgsql-${var.suffix}"
 }
@@ -17,7 +12,7 @@ resource "google_sql_database_instance" "postgres" {
 
     ip_configuration {
       ipv4_enabled    = false
-      private_network = var.network_id != "" ? var.network_id : data.google_compute_network.default_vpc.id
+      private_network = var.network_id
     }
 
     backup_configuration {
