@@ -1,52 +1,55 @@
-variable "subnet_id" {
-  type = string
-}
-
 variable "name_prefix" {
-  type = string
+  description = "Prefix for VM names"
+  type        = string
 }
 
 variable "suffix" {
-  type = string
+  description = "Unique suffix for VM names"
+  type        = string
 }
 
-variable "machine_type" {
-  type    = string
-  default = "e2-medium"
+variable "subnet_id" {
+  description = "Subnetwork ID for the VM"
+  type        = string
 }
 
 variable "zone" {
-  type = string
+  description = "Zone where VM will be created"
+  type        = string
 }
 
-variable "boot_image" {
-  type    = string
-  default = "debian-cloud/debian-12"
+variable "machine_type" {
+  description = "GCE machine type"
+  type        = string
+  default     = "e2-micro"
+}
+
+variable "image" {
+  description = "VM boot image"
+  type        = string
+  default     = "debian-cloud/debian-11"
 }
 
 variable "tags" {
-  type    = list(string)
-  default = []
+  description = "Network tags for the VM"
+  type        = list(string)
+  default     = []
 }
 
-# ---- CloudSQL inputs ----
 variable "cloudsql_private_ip" {
-  type    = string
-  default = ""
+  description = "CloudSQL private IP to connect from VM"
+  type        = string
+  default     = ""
 }
 
 variable "cloudsql_user" {
-  type    = string
-  default = ""
+  description = "CloudSQL default user for VM metadata"
+  type        = string
+  default     = ""
 }
 
 variable "cloudsql_db_name" {
-  type    = string
-  default = ""
-}
-
-variable "cloudsql_password" {
-  type      = string
-  default   = ""
-  sensitive = true
+  description = "CloudSQL default DB name for VM metadata"
+  type        = string
+  default     = ""
 }
