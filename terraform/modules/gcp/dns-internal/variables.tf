@@ -22,3 +22,13 @@ variable "domain_name" {
   type        = string
   default     = "internal.local"
 }
+variable "records" {
+  description = "DNS records to create"
+  type = list(object({
+    name     = string
+    type     = string
+    ttl      = number
+    rrdatas  = list(string)
+  }))
+}
+
