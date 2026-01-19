@@ -19,3 +19,9 @@ variable "tier" {
   type        = string
   default     = "db-f1-micro"
 }
+
+variable "network_id" {
+  description = "Optional: VPC network for private IP CloudSQL"
+  type        = string
+  default     = null
+}
