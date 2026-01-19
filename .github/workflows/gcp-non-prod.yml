@@ -23,6 +23,10 @@ on:
         description: "Storage Bucket"
         type: boolean
         default: false
+      ilb:
+        description: "Internal Load Balancer"
+        type: boolean
+        default: false
       monitoring:
         description: "Monitoring"
         type: boolean
@@ -39,7 +43,6 @@ on:
         description: "Internal DNS"
         type: boolean
         default: false
-       
 
 jobs:
   terraform:
@@ -63,7 +66,7 @@ jobs:
         working-directory: terraform/environments/non-prod/gcp
         run: terraform init
 
-      # 5️⃣ Terraform Plan (optional, safer)
+      # 5️⃣ Terraform Plan (optional)
       - name: Terraform Plan
         working-directory: terraform/environments/non-prod/gcp
         run: |
@@ -74,6 +77,7 @@ jobs:
             -var="create_compute_mig=${{ inputs.compute_mig }}" \
             -var="create_cloudsql=${{ inputs.cloudsql }}" \
             -var="create_storage=${{ inputs.storage }}" \
+            -var="create_ilb=${{ inputs.ilb }}" \
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
             -var="create_dns_internal=${{ inputs.dns_internal }}" \
@@ -88,14 +92,15 @@ jobs:
             -var="create_firewall=${{ inputs.firewall }}" \
             -var="create_compute_vm=${{ inputs.compute_vm }}" \
             -var="create_compute_mig=${{ inputs.compute_mig }}" \
-            -var="create_cloudsql=${{ inputs.cloudsql_postgres }}" \
+            -var="create_cloudsql=${{ inputs.cloudsql }}" \
             -var="create_storage=${{ inputs.storage }}" \
+            -var="create_ilb=${{ inputs.ilb }}" \
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
             -var="create_dns_internal=${{ inputs.dns_internal }}" \
             -var="create_dashboards=${{ inputs.dashboards }}"
 
-      # 7️⃣ Show Outputs
+      # 7️⃣ Show Terraform Outputs
       - name: Show Terraform Outputs
         working-directory: terraform/environments/non-prod/gcp
         run: |
