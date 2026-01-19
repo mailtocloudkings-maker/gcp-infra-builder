@@ -80,3 +80,13 @@ variable "zone" {
   type        = string
   description = "GCP Zone"
 }
+
+# ===========================
+# CloudSQL inputs
+# ===========================
+
+variable "cloudsql_default_user_password" {
+  description = "Default CloudSQL database user password"
+  type        = string
+  sensitive   = true
+}
