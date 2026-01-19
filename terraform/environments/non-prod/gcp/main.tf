@@ -82,10 +82,20 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 module "cloudsql" {
   count       = var.create_cloudsql ? 1 : 0
   source      = "../../../modules/gcp/cloudsql"
+
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
   region      = var.region
+
+  # REQUIRED inputs
+  network_id            = data.google_compute_network.default_vpc.id
+  default_user_password = var.cloudsql_default_user_password
+
+  depends_on = [
+    google_service_networking_connection.cloudsql_vpc_connection
+  ]
 }
+
 
 # -----------------------------
 # Compute VM Module
