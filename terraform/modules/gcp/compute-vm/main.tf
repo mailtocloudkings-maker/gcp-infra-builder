@@ -1,17 +1,24 @@
 resource "google_compute_instance" "vm" {
   name         = "${var.name_prefix}-vm-${var.suffix}"
-  machine_type = "e2-medium"
-  zone         = "us-central1-a"
+  machine_type = var.machine_type
+  zone         = var.zone
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-12"
+      image = var.boot_image
     }
   }
 
   network_interface {
     subnetwork = var.subnet_id
+    # You can optionally assign external IP:
+    access_config {}
   }
 
-  tags = ["vm"]
+  tags = var.tags
+
+  # Optional: metadata for startup scripts, etc.
+  metadata = {
+    startup-script = ""
+  }
 }
