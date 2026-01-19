@@ -1,12 +1,5 @@
 # -----------------------------
-# Default VPC (used only if network_id not passed)
-# -----------------------------
-data "google_compute_network" "default_vpc" {
-  name = "default"
-}
-
-# -----------------------------
-# Local values
+# Local instance name
 # -----------------------------
 locals {
   instance_name = "${var.name_prefix}-pgsql-${var.suffix}"
@@ -25,7 +18,7 @@ resource "google_sql_database_instance" "postgres" {
 
     ip_configuration {
       ipv4_enabled    = false
-      private_network = var.network_id != "" ? var.network_id : data.google_compute_network.default_vpc.id
+      private_network = var.network_id
     }
 
     backup_configuration {
@@ -53,4 +46,22 @@ resource "google_sql_user" "default_user" {
   name     = var.default_user_name
   instance = google_sql_database_instance.postgres.name
   password = var.default_user_password
+}
+
+# -----------------------------
+# Outputs
+# -----------------------------
+output "private_ip" {
+  value       = google_sql_database_instance.postgres.private_ip_address
+  description = "Private IP of the CloudSQL instance"
+}
+
+output "default_db_name" {
+  value       = var.create_default_db ? google_sql_database.default_db[0].name : ""
+  description = "Name of the default database (if created)"
+}
+
+output "default_user_name" {
+  value       = var.create_default_user ? google_sql_user.default_user[0].name : ""
+  description = "Default DB user (if created)"
 }
