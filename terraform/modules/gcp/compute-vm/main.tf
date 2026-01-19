@@ -31,6 +31,8 @@ resource "google_compute_instance" "vm" {
 
       if [ ! -z "$CLOUDSQL_IP" ]; then
         echo "Configuring CloudSQL connection..."
+        # Ensure home directory exists
+        mkdir -p /home/${var.name_prefix}
         # Example: create a .pgpass file for postgres
         echo "$CLOUDSQL_IP:5432:$DB_NAME:$DB_USER:$DB_PASS" > /home/${var.name_prefix}/.pgpass
         chmod 600 /home/${var.name_prefix}/.pgpass
@@ -42,8 +44,6 @@ resource "google_compute_instance" "vm" {
     EOT
   }
 
-  depends_on = [
-    # Ensure CloudSQL is created before VM
-    var.cloudsql_private_ip != "" ? google_sql_database_instance.postgres : null
-  ]
+  # Only depend on CloudSQL module if it exists
+  depends_on = var.cloudsql_private_ip != "" ? [module.cloudsql] : []
 }
