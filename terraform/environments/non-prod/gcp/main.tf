@@ -95,8 +95,6 @@ module "cloudsql" {
 
   depends_on = [google_service_networking_connection.private_vpc_connection]
 }
-
-
 # -----------------------------
 # Compute VM Module
 # -----------------------------
@@ -108,14 +106,15 @@ module "compute_vm" {
   suffix               = local.unique_suffix
   subnet_id            = data.google_compute_subnetwork.default_subnet.id
   zone                 = var.zone
-  create_vm            = true
-  machine_type         = "e2-micro"
-  image                = "debian-cloud/debian-11"
+  machine_type         = "e2-micro"                 # make sure this is a variable in compute-vm module
+  image                = "debian-cloud/debian-11"  # make sure this is a variable in compute-vm module
   tags                 = ["vm"]
+
   cloudsql_private_ip  = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
   cloudsql_user        = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
   cloudsql_db_name     = var.create_cloudsql ? module.cloudsql[0].default_db_name : ""
 }
+
 
 # -----------------------------
 # Compute MIG Module
