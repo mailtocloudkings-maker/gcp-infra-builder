@@ -26,7 +26,7 @@ locals {
   name_prefix   = "np"
 }
 
-# Use default VPC and subnet
+# Default VPC and subnet
 data "google_compute_network" "default_vpc" {
   name = "default"
 }
@@ -45,7 +45,17 @@ module "firewall" {
   source      = "../../../modules/gcp/firewall"
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
-  # Uses default VPC automatically
+}
+
+# -----------------------------
+# CloudSQL Postgres Module
+# -----------------------------
+module "cloudsql" {
+  count       = var.create_cloudsql ? 1 : 0
+  source      = "../../../modules/gcp/cloudsql"
+  name_prefix = local.name_prefix
+  suffix      = local.unique_suffix
+  region      = var.region
 }
 
 # -----------------------------
@@ -57,7 +67,14 @@ module "compute_vm" {
   subnet_id   = data.google_compute_subnetwork.default_subnet.id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
-  tags        = ["vm"]  # Attach firewall rules
+  tags        = ["vm"]
+
+  # CloudSQL info for automatic attachment
+  cloudsql_private_ip = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
+  cloudsql_user       = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
+  cloudsql_db_name    = var.create_cloudsql ? module.cloudsql[0].default_db_name : ""
+
+  depends_on = [module.cloudsql]
 }
 
 # -----------------------------
@@ -107,18 +124,7 @@ module "dns_internal" {
 }
 
 # -----------------------------
-# CloudSQL Postgres
-# -----------------------------
-module "cloudsql" {
-  count       = var.create_cloudsql ? 1 : 0
-  source      = "../../../modules/gcp/cloudsql"
-  name_prefix = local.name_prefix
-  suffix      = local.unique_suffix
-  network_id  = data.google_compute_network.default_vpc.id
-}
-
-# -----------------------------
-# Storage Bucket
+# Storage Bucket Module
 # -----------------------------
 module "storage" {
   count       = var.create_storage ? 1 : 0
@@ -128,7 +134,7 @@ module "storage" {
 }
 
 # -----------------------------
-# Monitoring
+# Monitoring Module
 # -----------------------------
 module "monitoring" {
   count       = var.create_monitoring ? 1 : 0
@@ -138,7 +144,7 @@ module "monitoring" {
 }
 
 # -----------------------------
-# Alerts
+# Alerts Module
 # -----------------------------
 module "alerts" {
   count       = var.create_alerts ? 1 : 0
@@ -148,7 +154,7 @@ module "alerts" {
 }
 
 # -----------------------------
-# Dashboards
+# Dashboards Module
 # -----------------------------
 module "dashboards" {
   count       = var.create_dashboards ? 1 : 0
