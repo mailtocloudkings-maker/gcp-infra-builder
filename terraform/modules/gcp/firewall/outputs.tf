@@ -1,14 +1,9 @@
-output "firewall_internal_id" {
+output "firewall_id" {
   value       = google_compute_firewall.allow_internal.id
-  description = "ID of the internal firewall rule"
+  description = "ID of the VM firewall"
 }
 
-output "firewall_bindplane_agent_id" {
-  value       = google_compute_firewall.bindplane_agent.id
-  description = "ID of the BindPlane agent firewall"
-}
-
-output "firewall_bindplane_ui_id" {
-  value       = google_compute_firewall.bindplane_ui.id
-  description = "ID of the BindPlane UI firewall"
+output "firewall_name" {
+  value       = google_compute_firewall.allow_internal.name
+  description = "Name of the VM firewall"
 }
