@@ -1,4 +1,6 @@
-# Create an internal DNS zone
+# -----------------------------
+# Create Internal Private DNS Zone
+# -----------------------------
 resource "google_dns_managed_zone" "internal" {
   name        = "${var.name_prefix}-internal-dns-${var.suffix}"
   dns_name    = "${var.domain_name}."
@@ -12,12 +14,18 @@ resource "google_dns_managed_zone" "internal" {
   }
 }
 
-# Optional: Create a sample A record pointing to 10.10.0.10
-resource "google_dns_record_set" "sample_a" {
-  count       = 1
+# -----------------------------
+# Create DNS Records (Dynamic)
+# -----------------------------
+resource "google_dns_record_set" "records" {
+  for_each = {
+    for record in var.records :
+    "${record.name}-${record.type}" => record
+  }
+
   managed_zone = google_dns_managed_zone.internal.name
-  name         = "app.${var.domain_name}."
-  type         = "A"
-  ttl          = 300
-  rrdatas      = ["10.10.0.10"]
+  name         = "${each.value.name}.${var.domain_name}."
+  type         = each.value.type
+  ttl          = each.value.ttl
+  rrdatas      = each.value.rrdatas
 }
