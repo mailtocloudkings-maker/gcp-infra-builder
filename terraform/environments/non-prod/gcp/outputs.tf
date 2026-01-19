@@ -1,19 +1,22 @@
-output "vm_names" {
-  value       = [for m in module.compute_vm : m.vm_name]
-  description = "Names of all created VMs"
+# -----------------------------
+# Outputs for pipeline / BindPlane
+# -----------------------------
+output "vm_name" {
+  value       = module.compute_vm[0].vm_name
+  description = "First VM name"
 }
 
-output "cloudsql_instance" {
-  value       = module.cloudsql[*].instance_name
-  description = "CloudSQL Postgres instance names"
+output "cloudsql_private_ip" {
+  value       = module.cloudsql[0].private_ip
+  description = "CloudSQL private IP"
 }
 
-output "firewall_name" {
-  value       = module.firewall[*].firewall_name
-  description = "Name of the firewall created"
+output "cloudsql_user" {
+  value       = module.cloudsql[0].default_user_name
+  description = "CloudSQL default user"
 }
 
-output "unique_suffix" {
-  value       = local.unique_suffix
-  description = "Unique suffix used for all resources"
+output "cloudsql_db_name" {
+  value       = module.cloudsql[0].default_db_name
+  description = "CloudSQL default database"
 }
