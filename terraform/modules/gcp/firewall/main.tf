@@ -1,39 +1,18 @@
-# General internal firewall
+# Data source to use default VPC
+data "google_compute_network" "default_vpc" {
+  name = "default"
+}
+
+# Firewall for VMs in default VPC
 resource "google_compute_firewall" "allow_internal" {
-  name    = "${var.name_prefix}-fw-${var.suffix}"
-  network = var.network_id
+  name        = "${var.name_prefix}-fw-${var.suffix}"
+  network     = data.google_compute_network.default_vpc.id
+  target_tags = ["vm"]
 
   allow {
     protocol = "tcp"
-    ports    = ["22", "80", "443"]
+    ports    = ["22", "80", "443", "5432", "9090", "3001"] # SSH, HTTP, HTTPS, Postgres, Prometheus, BindPlane UI
   }
 
-  source_ranges = ["10.0.0.0/8"]
-}
-
-# BindPlane agent firewall (allow 0.0.0.0/0 for agent connectivity)
-resource "google_compute_firewall" "bindplane_agent" {
-  name        = "${var.name_prefix}-bindplane-agent-${var.suffix}"
-  network     = var.network_id
-  target_tags = ["bindplane"]
-
-  allow {
-    protocol = "tcp"
-    ports    = ["443"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-}
-
-# BindPlane UI firewall (allow traffic to UI port)
-resource "google_compute_firewall" "bindplane_ui" {
-  name    = "${var.name_prefix}-bindplane-ui-${var.suffix}"
-  network = var.network_id
-
-  allow {
-    protocol = "tcp"
-    ports    = ["3001"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = ["0.0.0.0/0"] # Open to all; adjust if you want internal-only
 }
