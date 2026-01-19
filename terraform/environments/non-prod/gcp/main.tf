@@ -65,17 +65,16 @@ module "cloudsql" {
 module "compute_vm" {
   count       = var.create_compute_vm ? 1 : 0
   source      = "../../../modules/gcp/compute-vm"
+
   subnet_id   = data.google_compute_subnetwork.default_subnet.id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
+  zone        = var.zone
   tags        = ["vm"]
 
-  # CloudSQL info for automatic attachment
   cloudsql_private_ip = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
   cloudsql_user       = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
   cloudsql_db_name    = var.create_cloudsql ? module.cloudsql[0].default_db_name : ""
-
-  depends_on = [module.cloudsql]
 }
 
 # -----------------------------
