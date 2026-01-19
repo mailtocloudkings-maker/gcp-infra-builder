@@ -1,4 +1,6 @@
-# Prefix and unique suffix for naming resources
+# -----------------------------
+# Naming
+# -----------------------------
 variable "name_prefix" {
   description = "Prefix for CloudSQL instance"
   type        = string
@@ -9,35 +11,41 @@ variable "suffix" {
   type        = string
 }
 
+# -----------------------------
 # Region and machine type
+# -----------------------------
 variable "region" {
-  description = "Region for CloudSQL"
+  description = "Region where CloudSQL instance will be deployed"
   type        = string
   default     = "us-central1"
 }
 
 variable "tier" {
-  description = "Machine type tier for CloudSQL"
+  description = "Machine type tier for CloudSQL instance"
   type        = string
   default     = "db-f1-micro"
 }
 
+# -----------------------------
 # Backups and deletion protection
+# -----------------------------
 variable "enable_backups" {
-  description = "Enable automated backups"
+  description = "Enable automated backups for CloudSQL"
   type        = bool
   default     = true
 }
 
 variable "deletion_protection" {
-  description = "Prevent accidental deletion"
+  description = "Enable deletion protection to prevent accidental deletion"
   type        = bool
   default     = false
 }
 
-# Optional: create a default database
+# -----------------------------
+# Optional default database
+# -----------------------------
 variable "create_default_db" {
-  description = "Create a default database"
+  description = "Create a default database inside the CloudSQL instance"
   type        = bool
   default     = true
 }
@@ -48,9 +56,11 @@ variable "default_db_name" {
   default     = "appdb"
 }
 
-# Optional: create a default DB user
+# -----------------------------
+# Optional default database user
+# -----------------------------
 variable "create_default_user" {
-  description = "Create default DB user"
+  description = "Create a default database user"
   type        = bool
   default     = true
 }
@@ -62,15 +72,17 @@ variable "default_user_name" {
 }
 
 variable "default_user_password" {
-  description = "Default DB user password (use Secret Manager in production)"
+  description = "Password for the default DB user (use Secret Manager in production)"
   type        = string
   default     = "P@ssword123"
   sensitive   = true
 }
 
-# Optional: private network attachment
+# -----------------------------
+# Optional private network
+# -----------------------------
 variable "network_id" {
-  description = "VPC network ID for private IP"
+  description = "VPC network ID for private IP attachment (leave empty for default network)"
   type        = string
   default     = ""
 }
