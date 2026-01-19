@@ -1,6 +1,6 @@
 variable "create_vpc" { type = bool }
 variable "create_firewall" { type = bool }
-variable "create_dns" { type = bool }
+variable "create_dns_internal" { type = bool }
 variable "create_compute_vm" { type = bool }
 variable "create_compute_mig" { type = bool }
 variable "create_ilb" { type = bool }
