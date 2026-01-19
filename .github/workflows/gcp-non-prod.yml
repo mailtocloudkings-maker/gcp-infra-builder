@@ -15,8 +15,8 @@ on:
         description: "Compute MIG"
         type: boolean
         default: false
-      cloudsql_postgres:
-        description: "CloudSQL PostgreSQL"
+      cloudsql:
+        description: "CloudSQL"
         type: boolean
         default: false
       storage:
@@ -67,7 +67,7 @@ jobs:
             -var="create_firewall=${{ inputs.firewall }}" \
             -var="create_compute_vm=${{ inputs.compute_vm }}" \
             -var="create_compute_mig=${{ inputs.compute_mig }}" \
-            -var="create_cloudsql=${{ inputs.cloudsql_postgres }}" \
+            -var="create_cloudsql=${{ inputs.cloudsql }}" \
             -var="create_storage=${{ inputs.storage }}" \
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
