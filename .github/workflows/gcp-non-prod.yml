@@ -3,20 +3,16 @@ name: GCP Non-Prod Infra Builder
 on:
   workflow_dispatch:
     inputs:
-      vpc:
-        description: "VPC + Subnet"
-        type: boolean
-        default: false
       firewall:
         description: "Firewall"
         type: boolean
         default: true
-      dns_internal:
-        description: "Internal DNS"
-        type: boolean
-        default: false
       compute_vm:
         description: "Compute VM"
+        type: boolean
+        default: false
+      compute_mig:
+        description: "Compute MIG"
         type: boolean
         default: false
       cloudsql_postgres:
@@ -31,34 +27,70 @@ on:
         description: "Monitoring"
         type: boolean
         default: false
+      alerts:
+        description: "Alerts"
+        type: boolean
+        default: false
+      dashboards:
+        description: "Dashboards"
+        type: boolean
+        default: false
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout repo
       - uses: actions/checkout@v4
 
+      # 2️⃣ Authenticate to GCP
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # 3️⃣ Setup Terraform
       - uses: hashicorp/setup-terraform@v3
 
+      # 4️⃣ Terraform Init
       - name: Terraform Init
         working-directory: terraform/environments/non-prod/gcp
         run: terraform init
 
+      # 5️⃣ Terraform Plan (optional, safer)
+      - name: Terraform Plan
+        working-directory: terraform/environments/non-prod/gcp
+        run: |
+          terraform plan \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="create_firewall=${{ inputs.firewall }}" \
+            -var="create_compute_vm=${{ inputs.compute_vm }}" \
+            -var="create_compute_mig=${{ inputs.compute_mig }}" \
+            -var="create_cloudsql=${{ inputs.cloudsql_postgres }}" \
+            -var="create_storage=${{ inputs.storage }}" \
+            -var="create_monitoring=${{ inputs.monitoring }}" \
+            -var="create_alerts=${{ inputs.alerts }}" \
+            -var="create_dashboards=${{ inputs.dashboards }}"
+
+      # 6️⃣ Terraform Apply
       - name: Terraform Apply
         working-directory: terraform/environments/non-prod/gcp
         run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="create_vpc=${{ inputs.vpc }}" \
             -var="create_firewall=${{ inputs.firewall }}" \
-            -var="create_dns_internal=${{ inputs.dns_internal }}" \
             -var="create_compute_vm=${{ inputs.compute_vm }}" \
-            -var="create_cloudsql_postgres=${{ inputs.cloudsql_postgres }}" \
+            -var="create_compute_mig=${{ inputs.compute_mig }}" \
+            -var="create_cloudsql=${{ inputs.cloudsql_postgres }}" \
             -var="create_storage=${{ inputs.storage }}" \
-            -var="create_monitoring=${{ inputs.monitoring }}"
+            -var="create_monitoring=${{ inputs.monitoring }}" \
+            -var="create_alerts=${{ inputs.alerts }}" \
+            -var="create_dashboards=${{ inputs.dashboards }}"
+
+      # 7️⃣ Show Outputs
+      - name: Show Terraform Outputs
+        working-directory: terraform/environments/non-prod/gcp
+        run: |
+          echo "==== Terraform Outputs ===="
+          terraform output
