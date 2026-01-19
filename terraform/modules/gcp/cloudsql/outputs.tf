@@ -1,24 +1,28 @@
-output "instance_name" {
-  value       = google_sql_database_instance.postgres.name
+# ==============================
+# CloudSQL Outputs (conditional)
+# ==============================
+
+output "cloudsql_instance_name" {
   description = "CloudSQL instance name"
+  value       = var.create_cloudsql && length(module.cloudsql) > 0 ? module.cloudsql[0].instance_name : ""
 }
 
-output "instance_connection_name" {
-  value       = google_sql_database_instance.postgres.connection_name
+output "cloudsql_connection_name" {
   description = "CloudSQL instance connection string"
+  value       = var.create_cloudsql && length(module.cloudsql) > 0 ? module.cloudsql[0].instance_connection_name : ""
 }
 
-output "private_ip" {
-  value       = google_sql_database_instance.postgres.private_ip_address
-  description = "Private IP of the CloudSQL instance"
+output "cloudsql_private_ip" {
+  description = "CloudSQL private IP"
+  value       = var.create_cloudsql && length(module.cloudsql) > 0 ? module.cloudsql[0].private_ip : ""
 }
 
-output "default_db_name" {
-  value       = var.create_default_db ? google_sql_database.default_db[0].name : ""
-  description = "Name of the default database (if created)"
+output "cloudsql_db_name" {
+  description = "Default database name in CloudSQL"
+  value       = var.create_cloudsql && length(module.cloudsql) > 0 ? module.cloudsql[0].default_db_name : ""
 }
 
-output "default_user_name" {
-  value       = var.create_default_user ? google_sql_user.default_user[0].name : ""
-  description = "Default DB user (if created)"
+output "cloudsql_user" {
+  description = "Default CloudSQL username"
+  value       = var.create_cloudsql && length(module.cloudsql) > 0 ? module.cloudsql[0].default_user_name : ""
 }
