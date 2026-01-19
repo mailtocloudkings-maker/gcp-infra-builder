@@ -46,6 +46,7 @@ module "dns_internal" {
   network_id  = module.vpc[0].vpc_id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
+  domain_name = "internal.nonprod.example.com"
 }
 
 module "compute_vm" {
