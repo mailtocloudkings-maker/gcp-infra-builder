@@ -8,7 +8,10 @@ output "dns_zone_id" {
   description = "The ID of the internal DNS zone"
 }
 
-output "dns_zone_network" {
-  value       = google_dns_managed_zone.internal.private_visibility_config[0].networks[0].network_url
-  description = "The network attached to the internal DNS zone"
+output "dns_zone_networks" {
+  description = "Networks attached to the private DNS zone"
+  value = [
+    for n in google_dns_managed_zone.internal.private_visibility_config[0].networks :
+    n.network_url
+  ]
 }
