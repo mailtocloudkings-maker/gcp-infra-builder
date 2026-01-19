@@ -1,7 +1,24 @@
 # ===========================
-# ✅ Only resources to create
+# GCP Project Info
 # ===========================
+variable "project_id" {
+  type        = string
+  description = "GCP Project ID"
+}
 
+variable "region" {
+  type        = string
+  description = "GCP Region"
+}
+
+variable "zone" {
+  type        = string
+  description = "GCP Zone"
+}
+
+# ===========================
+# Resource Creation Flags
+# ===========================
 variable "create_firewall" {
   type        = bool
   description = "Create firewall rules"
@@ -63,30 +80,10 @@ variable "create_dashboards" {
 }
 
 # ===========================
-# GCP project info
+# CloudSQL Password
 # ===========================
-
-variable "project_id" {
-  type        = string
-  description = "GCP Project ID"
-}
-
-variable "region" {
-  type        = string
-  description = "GCP Region"
-}
-
-variable "zone" {
-  type        = string
-  description = "GCP Zone"
-}
-
-# ===========================
-# CloudSQL inputs
-# ===========================
-
 variable "cloudsql_default_user_password" {
-  description = "Default CloudSQL database user password"
   type        = string
   sensitive   = true
+  description = "Password for the default CloudSQL user (set via GitHub Secrets)"
 }
