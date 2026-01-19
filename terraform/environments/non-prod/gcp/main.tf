@@ -40,17 +40,20 @@ data "google_compute_subnetwork" "default_subnet" {
 resource "google_project_service" "service_networking" {
   service = "servicenetworking.googleapis.com"
 }
-
+# -----------------------------
+# Reserve IP range for CloudSQL (unique)
+# -----------------------------
 resource "google_compute_global_address" "private_ip_range" {
-  name          = "cloudsql-private-range-${local.unique_suffix}"
+  name          = "cloudsql-private-range-${random_id.suffix.hex}"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = data.google_compute_network.default_vpc.id
 }
 
-
-# Create Service Networking connection
+# -----------------------------
+# Create Service Networking connection with unique IP range
+# -----------------------------
 resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = data.google_compute_network.default_vpc.id
   service                 = "servicenetworking.googleapis.com"
@@ -58,6 +61,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 
   depends_on = [google_project_service.service_networking]
 }
+
 
 # -----------------------------
 # CloudSQL PostgreSQL Module
