@@ -1,12 +1,7 @@
 variable "subnet_id" {
-  description = "Subnet ID for VM"
+  description = "ID of the existing subnet to use"
   type        = string
 }
 
-variable "name_prefix" {
-  type = string
-}
-
-variable "suffix" {
-  type = string
-}
+variable "name_prefix" { type = string }
+variable "suffix" { type = string }
