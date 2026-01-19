@@ -74,6 +74,25 @@ module "ilb" {
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
 }
+# Internal DNS module (after ILB)
+module "dns_internal" {
+  count       = var.create_dns_internal ? 1 : 0
+  source      = "../../../modules/gcp/dns-internal"
+  network_id  = data.google_compute_network.default_vpc.id
+  name_prefix = local.name_prefix
+  suffix      = local.unique_suffix
+  domain_name = "internal.nonprod.example.com"
+  records = [
+    # Example: point your internal LB IP
+    {
+      name = "internal-lb"
+      type = "A"
+      ttl  = 300
+      rrdatas = [module.ilb[0].lb_ip]
+    }
+  ]
+}
+
 
 # CloudSQL Postgres
 module "cloudsql" {
