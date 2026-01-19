@@ -5,7 +5,7 @@ terraform {
       version = "~> 5.0"
     }
     random = {
-      source  = "hashicorp/random"
+      source = "hashicorp/random"
     }
   }
 }
@@ -16,6 +16,7 @@ provider "google" {
   zone    = var.zone
 }
 
+# Generate unique suffix for resource names
 resource "random_id" "suffix" {
   byte_length = 3
 }
@@ -25,63 +26,64 @@ locals {
   name_prefix   = "np"
 }
 
-module "vpc" {
-  count       = var.create_vpc ? 1 : 0
-  source      = "../../../modules/gcp/vpc"
-  name_prefix = local.name_prefix
-  suffix      = local.unique_suffix
+# Default VPC and subnet
+data "google_compute_network" "default_vpc" {
+  name = "default"
 }
 
+data "google_compute_subnetwork" "default_subnet" {
+  name    = "default"
+  region  = var.region
+  network = data.google_compute_network.default_vpc.id
+}
+
+# Firewall module
 module "firewall" {
-  count       = var.create_firewall && var.create_vpc ? 1 : 0
+  count       = var.create_firewall ? 1 : 0
   source      = "../../../modules/gcp/firewall"
-  network_id  = module.vpc[0].vpc_id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
+  # Uses default VPC automatically
 }
 
-module "dns_internal" {
-  count       = var.create_dns && var.create_vpc ? 1 : 0
-  source      = "../../../modules/gcp/dns-internal"
-  network_id  = module.vpc[0].vpc_id
-  name_prefix = local.name_prefix
-  suffix      = local.unique_suffix
-  domain_name = "internal.nonprod.example.com"
-}
-
+# Compute VM module
 module "compute_vm" {
-  count       = var.create_compute_vm && var.create_vpc ? 1 : 0
+  count       = var.create_compute_vm ? 1 : 0
   source      = "../../../modules/gcp/compute-vm"
-  subnet_id   = module.vpc[0].subnet_id
+  subnet_id   = data.google_compute_subnetwork.default_subnet.id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
+  tags        = ["vm"]  # attach to firewall
 }
 
+# Compute MIG
 module "compute_mig" {
-  count       = var.create_compute_mig && var.create_vpc ? 1 : 0
+  count       = var.create_compute_mig ? 1 : 0
   source      = "../../../modules/gcp/compute-mig"
-  subnet_id   = module.vpc[0].subnet_id
+  subnet_id   = data.google_compute_subnetwork.default_subnet.id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
 }
 
+# Internal Load Balancer
 module "ilb" {
-  count       = var.create_ilb && var.create_vpc ? 1 : 0
+  count       = var.create_ilb ? 1 : 0
   source      = "../../../modules/gcp/load-balancer/internal"
-  network_id  = module.vpc[0].vpc_id
-  subnet_id   = module.vpc[0].subnet_id
+  network_id  = data.google_compute_network.default_vpc.id
+  subnet_id   = data.google_compute_subnetwork.default_subnet.id
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
 }
 
+# CloudSQL Postgres
 module "cloudsql" {
-  count       = var.create_cloudsql && var.create_vpc ? 1 : 0
-  source      = "../../../modules/gcp/cloudsql"
-  network_id  = module.vpc[0].vpc_id
+  count       = var.create_cloudsql ? 1 : 0
+  source      = "../../../modules/gcp/cloudsql-postgres"
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
 }
 
+# Storage Bucket
 module "storage" {
   count       = var.create_storage ? 1 : 0
   source      = "../../../modules/gcp/storage-bucket"
@@ -89,6 +91,7 @@ module "storage" {
   suffix      = local.unique_suffix
 }
 
+# Monitoring
 module "monitoring" {
   count       = var.create_monitoring ? 1 : 0
   source      = "../../../modules/gcp/monitoring"
@@ -96,6 +99,7 @@ module "monitoring" {
   suffix      = local.unique_suffix
 }
 
+# Alerts
 module "alerts" {
   count       = var.create_alerts ? 1 : 0
   source      = "../../../modules/gcp/alerts"
@@ -103,6 +107,7 @@ module "alerts" {
   suffix      = local.unique_suffix
 }
 
+# Dashboards
 module "dashboards" {
   count       = var.create_dashboards ? 1 : 0
   source      = "../../../modules/gcp/dashboards"
