@@ -2,7 +2,6 @@ resource "google_monitoring_dashboard" "this" {
   dashboard_json = jsonencode({
     displayName = "${var.name_prefix}-dashboard-${var.suffix}"
 
-    # Example widgets
     gridLayout = {
       columns = 2
       widgets = [
@@ -15,14 +14,17 @@ resource "google_monitoring_dashboard" "this" {
                   timeSeriesFilter = {
                     filter = "metric.type=\"compute.googleapis.com/instance/cpu/utilization\""
                     aggregation = {
-                      alignmentPeriod     = "60s"
-                      perSeriesAligner    = "ALIGN_MEAN"
+                      alignmentPeriod  = "60s"
+                      perSeriesAligner = "ALIGN_MEAN"
                     }
                   }
                 }
               }
             ]
-            timespan = "1800s"
+            yAxis = {
+              label = "CPU Usage"
+              scale = "LINEAR"
+            }
           }
         },
         {
@@ -34,14 +36,17 @@ resource "google_monitoring_dashboard" "this" {
                   timeSeriesFilter = {
                     filter = "metric.type=\"compute.googleapis.com/instance/disk/bytes_used\""
                     aggregation = {
-                      alignmentPeriod     = "60s"
-                      perSeriesAligner    = "ALIGN_MEAN"
+                      alignmentPeriod  = "60s"
+                      perSeriesAligner = "ALIGN_MEAN"
                     }
                   }
                 }
               }
             ]
-            timespan = "1800s"
+            yAxis = {
+              label = "Disk Bytes Used"
+              scale = "LINEAR"
+            }
           }
         }
       ]
