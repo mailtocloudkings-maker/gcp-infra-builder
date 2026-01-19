@@ -35,6 +35,11 @@ on:
         description: "Dashboards"
         type: boolean
         default: false
+      dns_internal:
+        description: "Internal DNS"
+        type: boolean
+        default: false
+       
 
 jobs:
   terraform:
@@ -71,6 +76,7 @@ jobs:
             -var="create_storage=${{ inputs.storage }}" \
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
+            -var="create_dns_internal=${{ inputs.dns_internal }}" \
             -var="create_dashboards=${{ inputs.dashboards }}"
 
       # 6️⃣ Terraform Apply
@@ -86,6 +92,7 @@ jobs:
             -var="create_storage=${{ inputs.storage }}" \
             -var="create_monitoring=${{ inputs.monitoring }}" \
             -var="create_alerts=${{ inputs.alerts }}" \
+            -var="create_dns_internal=${{ inputs.dns_internal }}" \
             -var="create_dashboards=${{ inputs.dashboards }}"
 
       # 7️⃣ Show Outputs
