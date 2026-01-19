@@ -1,23 +1,19 @@
-output "vpc_id" {
-  value = module.vpc[0].vpc_id
-  description = "VPC ID"
-  condition = var.create_vpc
-}
-
-output "subnet_id" {
-  value = module.vpc[0].subnet_id
-  description = "Subnet ID"
-  condition = var.create_vpc
+output "vm_names" {
+  value       = [for m in module.compute_vm : m.vm_name]
+  description = "Names of all created VMs"
 }
 
 output "cloudsql_instance" {
-  value = module.cloudsql[0].instance_name
-  description = "CloudSQL Postgres Instance Name"
-  condition = var.create_cloudsql
+  value       = module.cloudsql[*].instance_name
+  description = "CloudSQL Postgres instance names"
 }
 
-output "internal_lb" {
-  value = module.ilb[0].lb_name
-  description = "Internal Load Balancer Name"
-  condition = var.create_ilb
+output "firewall_name" {
+  value       = module.firewall[*].firewall_name
+  description = "Name of the firewall created"
+}
+
+output "unique_suffix" {
+  value       = local.unique_suffix
+  description = "Unique suffix used for all resources"
 }
