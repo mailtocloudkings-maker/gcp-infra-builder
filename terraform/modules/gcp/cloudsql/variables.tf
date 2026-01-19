@@ -1,85 +1,12 @@
-# ==============================
-# Naming
-# ==============================
-variable "name_prefix" {
-  description = "Prefix for CloudSQL instance names"
-  type        = string
-}
-
-variable "suffix" {
-  description = "Unique suffix for the CloudSQL instance"
-  type        = string
-}
-
-# ==============================
-# Region and machine tier
-# ==============================
-variable "region" {
-  description = "Region where the CloudSQL instance will be deployed (REQUIRED)"
-  type        = string
-}
-
-variable "tier" {
-  description = "Machine type tier for CloudSQL instance"
-  type        = string
-  default     = "db-f1-micro"
-}
-
-# ==============================
-# Networking (REQUIRED)
-# ==============================
-variable "network_id" {
-  description = "VPC network ID used for CloudSQL private IP (REQUIRED)"
-  type        = string
-}
-
-# ==============================
-# Backups and deletion protection
-# ==============================
-variable "enable_backups" {
-  description = "Enable automated backups for CloudSQL"
-  type        = bool
-  default     = true
-}
-
-variable "deletion_protection" {
-  description = "Prevent accidental deletion of CloudSQL instance"
-  type        = bool
-  default     = false
-}
-
-# ==============================
-# Optional: Default database
-# ==============================
-variable "create_default_db" {
-  description = "Create a default database inside CloudSQL"
-  type        = bool
-  default     = true
-}
-
-variable "default_db_name" {
-  description = "Name of the default database (if created)"
-  type        = string
-  default     = "appdb"
-}
-
-# ==============================
-# Optional: Default database user
-# ==============================
-variable "create_default_user" {
-  description = "Create a default database user"
-  type        = bool
-  default     = true
-}
-
-variable "default_user_name" {
-  description = "Default database username (if user is created)"
-  type        = string
-  default     = "appuser"
-}
-
-variable "default_user_password" {
-  description = "Password for the default database user (REQUIRED, use Secret Manager in production)"
-  type        = string
-  sensitive   = true
-}
+variable "name_prefix" { type = string }
+variable "suffix" { type = string }
+variable "region" { type = string }
+variable "network_id" { type = string }
+variable "default_user_password" { type = string, sensitive = true }
+variable "create_default_db" { type = bool, default = true }
+variable "default_db_name" { type = string, default = "appdb" }
+variable "create_default_user" { type = bool, default = true }
+variable "default_user_name" { type = string, default = "appuser" }
+variable "tier" { type = string, default = "db-f1-micro" }
+variable "enable_backups" { type = bool, default = true }
+variable "deletion_protection" { type = bool, default = false }
