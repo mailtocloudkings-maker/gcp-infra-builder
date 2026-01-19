@@ -33,9 +33,8 @@ data "google_compute_network" "default_vpc" {
 }
 
 data "google_compute_subnetwork" "default_subnet" {
-  name    = "default"
-  region  = var.region
-  network = data.google_compute_network.default_vpc.id
+  name   = "default"
+  region = var.region
 }
 
 # -----------------------------
