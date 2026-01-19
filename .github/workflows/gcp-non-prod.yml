@@ -1,0 +1,64 @@
+name: GCP Non-Prod Infra Builder
+
+on:
+  workflow_dispatch:
+    inputs:
+      vpc:
+        description: "VPC + Subnet"
+        type: boolean
+        default: false
+      firewall:
+        description: "Firewall"
+        type: boolean
+        default: true
+      dns_internal:
+        description: "Internal DNS"
+        type: boolean
+        default: false
+      compute_vm:
+        description: "Compute VM"
+        type: boolean
+        default: false
+      cloudsql_postgres:
+        description: "CloudSQL PostgreSQL"
+        type: boolean
+        default: false
+      storage:
+        description: "Storage Bucket"
+        type: boolean
+        default: false
+      monitoring:
+        description: "Monitoring"
+        type: boolean
+        default: false
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform/environments/non-prod/gcp
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: terraform/environments/non-prod/gcp
+        run: |
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="create_vpc=${{ inputs.vpc }}" \
+            -var="create_firewall=${{ inputs.firewall }}" \
+            -var="create_dns_internal=${{ inputs.dns_internal }}" \
+            -var="create_compute_vm=${{ inputs.compute_vm }}" \
+            -var="create_cloudsql_postgres=${{ inputs.cloudsql_postgres }}" \
+            -var="create_storage=${{ inputs.storage }}" \
+            -var="create_monitoring=${{ inputs.monitoring }}"
