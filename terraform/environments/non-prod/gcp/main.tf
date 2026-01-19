@@ -92,7 +92,7 @@ module "cloudsql" {
   default_user_password = var.cloudsql_default_user_password
 
   depends_on = [
-    google_service_networking_connection.cloudsql_vpc_connection
+    google_service_networking_connection.private_vpc_connection
   ]
 }
 
