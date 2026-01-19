@@ -78,7 +78,7 @@ module "ilb" {
 # CloudSQL Postgres
 module "cloudsql" {
   count       = var.create_cloudsql ? 1 : 0
-  source      = "../../../modules/gcp/cloudsql-postgres"
+  source      = "../../../modules/gcp/cloudsql"
   name_prefix = local.name_prefix
   suffix      = local.unique_suffix
 }
