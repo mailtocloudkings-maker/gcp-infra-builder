@@ -1,3 +1,4 @@
+# Prefix and unique suffix for naming resources
 variable "name_prefix" {
   description = "Prefix for CloudSQL instance"
   type        = string
@@ -8,6 +9,7 @@ variable "suffix" {
   type        = string
 }
 
+# Region and machine type
 variable "region" {
   description = "Region for CloudSQL"
   type        = string
@@ -20,6 +22,7 @@ variable "tier" {
   default     = "db-f1-micro"
 }
 
+# Backups and deletion protection
 variable "enable_backups" {
   description = "Enable automated backups"
   type        = bool
@@ -32,9 +35,9 @@ variable "deletion_protection" {
   default     = false
 }
 
-# Optional database creation
+# Optional: create a default database
 variable "create_default_db" {
-  description = "Create default database"
+  description = "Create a default database"
   type        = bool
   default     = true
 }
@@ -45,7 +48,7 @@ variable "default_db_name" {
   default     = "appdb"
 }
 
-# Optional user creation
+# Optional: create a default DB user
 variable "create_default_user" {
   description = "Create default DB user"
   type        = bool
@@ -59,8 +62,15 @@ variable "default_user_name" {
 }
 
 variable "default_user_password" {
-  description = "Default DB user password (use Secret Manager in prod)"
+  description = "Default DB user password (use Secret Manager in production)"
   type        = string
   default     = "P@ssword123"
   sensitive   = true
+}
+
+# Optional: private network attachment
+variable "network_id" {
+  description = "VPC network ID for private IP"
+  type        = string
+  default     = ""
 }
