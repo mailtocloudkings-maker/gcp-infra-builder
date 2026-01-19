@@ -14,11 +14,11 @@ output "private_ip" {
 }
 
 output "default_db_name" {
-  value       = google_sql_database.default_db[*].name
-  description = "Name of the default database"
+  value       = var.create_default_db ? google_sql_database.default_db[0].name : ""
+  description = "Name of the default database (if created)"
 }
 
 output "default_user_name" {
-  value       = google_sql_user.default_user[*].name
-  description = "Default DB user"
+  value       = var.create_default_user ? google_sql_user.default_user[0].name : ""
+  description = "Default DB user (if created)"
 }
