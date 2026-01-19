@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repository
       - uses: actions/checkout@v4
 
       # 2️⃣ Authenticate to GCP
@@ -58,20 +58,24 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # 3️⃣ Setup Terraform
+      # 3️⃣ Setup Terraform CLI
       - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.6"
 
       # 4️⃣ Terraform Init
       - name: Terraform Init
         working-directory: terraform/environments/non-prod/gcp
         run: terraform init
 
-      # 5️⃣ Terraform Plan (optional)
+      # 5️⃣ Terraform Plan
       - name: Terraform Plan
         working-directory: terraform/environments/non-prod/gcp
         run: |
           terraform plan \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="zone=${{ secrets.GCP_ZONE }}" \
             -var="create_firewall=${{ inputs.firewall }}" \
             -var="create_compute_vm=${{ inputs.compute_vm }}" \
             -var="create_compute_mig=${{ inputs.compute_mig }}" \
@@ -89,6 +93,8 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="zone=${{ secrets.GCP_ZONE }}" \
             -var="create_firewall=${{ inputs.firewall }}" \
             -var="create_compute_vm=${{ inputs.compute_vm }}" \
             -var="create_compute_mig=${{ inputs.compute_mig }}" \
