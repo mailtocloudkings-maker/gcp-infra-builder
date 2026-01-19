@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket  = "tf-state-non-prod"
-    prefix  = "gcp"
+    bucket  = var.tf_state_bucket
+    prefix  = var.tf_state_prefix
   }
 }
