@@ -41,10 +41,11 @@ resource "google_project_service" "service_networking" {
   service = "servicenetworking.googleapis.com"
 }
 # -----------------------------
-# Reserve IP range for CloudSQL (unique)
+# -----------------------------
+# Reserve a unique IP range for CloudSQL
 # -----------------------------
 resource "google_compute_global_address" "private_ip_range" {
-  name          = "cloudsql-private-range-${random_id.suffix.hex}"
+  name          = "cloudsql-private-range-${formatdate("YYYYMMDDhhmm", timestamp())}-${random_id.suffix.hex}"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
@@ -52,15 +53,17 @@ resource "google_compute_global_address" "private_ip_range" {
 }
 
 # -----------------------------
-# Create Service Networking connection with unique IP range
+# Create Service Networking connection (import if exists)
 # -----------------------------
 resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = data.google_compute_network.default_vpc.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_range.name]
 
+  # Ensure the connection is created only after the service is enabled
   depends_on = [google_project_service.service_networking]
 }
+
 
 
 # -----------------------------
