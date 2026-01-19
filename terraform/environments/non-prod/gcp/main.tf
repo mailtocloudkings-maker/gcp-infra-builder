@@ -48,6 +48,35 @@ module "firewall" {
 }
 
 # -----------------------------
+# Enable Service Networking
+# -----------------------------
+resource "google_project_service" "service_networking" {
+  service = "servicenetworking.googleapis.com"
+}
+
+# -----------------------------
+# Reserve IP range for CloudSQL
+# -----------------------------
+resource "google_compute_global_address" "private_ip_range" {
+  name          = "cloudsql-private-range"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = data.google_compute_network.default_vpc.id
+}
+
+# -----------------------------
+# Create Service Networking connection
+# -----------------------------
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = data.google_compute_network.default_vpc.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_range.name]
+
+  depends_on = [google_project_service.service_networking]
+}
+
+# -----------------------------
 # CloudSQL Postgres Module
 # -----------------------------
 module "cloudsql" {
