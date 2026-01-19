@@ -15,3 +15,39 @@ variable "suffix" {
   description = "Unique suffix for the VM name"
   type        = string
 }
+
+# Tags to attach to the VM (for firewall)
+variable "tags" {
+  description = "Network tags for the VM"
+  type        = list(string)
+  default     = []
+}
+
+# CloudSQL private IP (to connect VM to DB)
+variable "cloudsql_private_ip" {
+  description = "Private IP address of the CloudSQL instance"
+  type        = string
+  default     = ""
+}
+
+# CloudSQL username
+variable "cloudsql_user" {
+  description = "CloudSQL username for VM connection"
+  type        = string
+  default     = ""
+}
+
+# CloudSQL database name
+variable "cloudsql_db_name" {
+  description = "CloudSQL database name for VM connection"
+  type        = string
+  default     = ""
+}
+
+# CloudSQL password (optional, can use Secret Manager)
+variable "cloudsql_password" {
+  description = "CloudSQL user password for VM connection"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
