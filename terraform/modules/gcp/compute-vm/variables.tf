@@ -1,53 +1,77 @@
+# -----------------------------
 # Subnet to attach the VM to
+# -----------------------------
 variable "subnet_id" {
-  description = "ID of the subnet where VM will be deployed"
+  description = "ID of the subnet where the VM will be deployed"
   type        = string
 }
 
-# Prefix for VM name
+# -----------------------------
+# VM Name Prefix and Suffix
+# -----------------------------
 variable "name_prefix" {
   description = "Prefix for the VM name"
   type        = string
 }
 
-# Unique suffix for VM name
 variable "suffix" {
   description = "Unique suffix for the VM name"
   type        = string
 }
 
-# Tags to attach to the VM (for firewall)
+# -----------------------------
+# VM Network Tags (for firewall)
+# -----------------------------
 variable "tags" {
-  description = "Network tags for the VM"
+  description = "Network tags to assign to the VM"
   type        = list(string)
   default     = []
 }
 
-# CloudSQL private IP (to connect VM to DB)
+# -----------------------------
+# CloudSQL Connection Info
+# -----------------------------
 variable "cloudsql_private_ip" {
-  description = "Private IP address of the CloudSQL instance"
+  description = "Private IP address of the CloudSQL instance to connect from the VM"
   type        = string
   default     = ""
 }
 
-# CloudSQL username
 variable "cloudsql_user" {
   description = "CloudSQL username for VM connection"
   type        = string
   default     = ""
 }
 
-# CloudSQL database name
 variable "cloudsql_db_name" {
   description = "CloudSQL database name for VM connection"
   type        = string
   default     = ""
 }
 
-# CloudSQL password (optional, can use Secret Manager)
 variable "cloudsql_password" {
-  description = "CloudSQL user password for VM connection"
+  description = "CloudSQL user password for VM connection (sensitive)"
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# -----------------------------
+# Optional: VM Boot Config
+# -----------------------------
+variable "machine_type" {
+  description = "GCP machine type for the VM"
+  type        = string
+  default     = "e2-micro"
+}
+
+variable "boot_image" {
+  description = "Boot image for the VM"
+  type        = string
+  default     = "debian-cloud/debian-11"
+}
+
+variable "zone" {
+  description = "GCP zone for the VM"
+  type        = string
 }
