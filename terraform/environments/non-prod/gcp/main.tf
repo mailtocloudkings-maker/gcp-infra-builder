@@ -48,14 +48,21 @@ resource "google_project_service" "service_networking" {
 }
 
 # -----------------------------
-# EXISTING Service Networking Connection (IMPORTED)
+# EXISTING Service Networking Connection
+# (MUST BE IMPORTED – NOT CREATED)
 # -----------------------------
 resource "google_service_networking_connection" "private_vpc_connection" {
-  network                 = data.google_compute_network.default_vpc.id
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = ["cloudsql-private-range"]
+  network = data.google_compute_network.default_vpc.id
+  service = "servicenetworking.googleapis.com"
 
-  depends_on = [google_project_service.service_networking]
+  # EXACT existing range name
+  reserved_peering_ranges = [
+    "cloudsql-private-range-5b4a69"
+  ]
+
+  depends_on = [
+    google_project_service.service_networking
+  ]
 }
 
 # -----------------------------
@@ -65,11 +72,11 @@ module "cloudsql" {
   count  = var.create_cloudsql ? 1 : 0
   source = "../../../modules/gcp/cloudsql"
 
-  name_prefix            = local.name_prefix
-  suffix                 = local.unique_suffix
-  region                 = var.region
-  network_id             = data.google_compute_network.default_vpc.id
-  default_user_password  = var.cloudsql_default_user_password
+  name_prefix           = local.name_prefix
+  suffix                = local.unique_suffix
+  region                = var.region
+  network_id            = data.google_compute_network.default_vpc.id
+  default_user_password = var.cloudsql_default_user_password
 
   depends_on = [
     google_service_networking_connection.private_vpc_connection
@@ -83,12 +90,12 @@ module "compute_vm" {
   count  = var.create_compute_vm ? 1 : 0
   source = "../../../modules/gcp/compute-vm"
 
-  name_prefix         = local.name_prefix
-  suffix              = local.unique_suffix
-  subnet_id           = data.google_compute_subnetwork.default_subnet.id
-  zone                = var.zone
-  machine_type        = "e2-micro"
-  tags                = ["vm"]
+  name_prefix  = local.name_prefix
+  suffix       = local.unique_suffix
+  subnet_id    = data.google_compute_subnetwork.default_subnet.id
+  zone         = var.zone
+  machine_type = "e2-micro"
+  tags         = ["vm"]
 
   cloudsql_private_ip = var.create_cloudsql ? module.cloudsql[0].private_ip : ""
   cloudsql_user       = var.create_cloudsql ? module.cloudsql[0].default_user_name : ""
