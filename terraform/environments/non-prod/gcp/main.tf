@@ -40,28 +40,27 @@ data "google_compute_subnetwork" "default_subnet" {
   region = var.region
 }
 
-# -----------------------------
-# Enable Service Networking API
-# -----------------------------
-resource "google_project_service" "service_networking" {
+ 
+ resource "google_project_service" "service_networking" {
   service = "servicenetworking.googleapis.com"
 }
 
-# -----------------------------
-# EXISTING Service Networking Connection
-# (MUST BE IMPORTED – NOT CREATED)
-# -----------------------------
-resource "google_service_networking_connection" "private_vpc_connection" {
-  network = data.google_compute_network.default_vpc.id
-  service = "servicenetworking.googleapis.com"
-
-  # EXACT existing range name
-  reserved_peering_ranges = [
-    "cloudsql-private-range-5b4a69"
-  ]
+resource "google_compute_global_address" "private_service_range" {
+  name          = "cloudsql-private-range"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.vpc.id
+}
+ 
+ resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = google_compute_network.vpc.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_service_range.name]
 
   depends_on = [
-    google_project_service.service_networking
+    google_project_service.service_networking,
+    google_compute_global_address.private_service_range
   ]
 }
 
